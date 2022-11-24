@@ -4,7 +4,6 @@
 #include "WiFi.h"
 #include <Wire.h>
 #include <BH1750.h>
-#include <ArduinoJson.h>
 
 //pruebamoviles-e07f4
 #define DHTPIN 32
@@ -26,14 +25,8 @@ void setup() {
   dht.begin();
   WiFi.begin(ssid, password);
 
-//  while (WiFi.status() != WL_CONNECTED) {
-//  delay(500);
-//  Serial.println("Connecting to WiFi..");
-//
-//  
-//  }
   Serial.println("Connected to the WiFi network");
-  Serial.print("La dirección IP es: ");
+  Serial.print("IP Address is: ");
   Serial.println(WiFi.localIP());
   
   Wire.begin();
@@ -44,11 +37,17 @@ void setup() {
 void loop() {
   delay(10 * 1000);
   HTTPClient http;
+
+  // Quantity measures
   int temp  = dht.readTemperature(); 
   int env_hum = dht.readHumidity(); 
+  // Soil moist has to be converted to percentage
   int soil_moist = analogRead(SOIL_MOIST_PIN);
   soil_moist = 100-map(soil_moist,0,4095,0,100);
   int light = analogRead(LIGHT_PIN);
+
+  
+  // Join measures
   String measure_url = serverName + "?humidity=" + env_hum + "&soil_moist=" + soil_moist + "&light=" + light + "&temperature=" + temp;
   
   http.begin(measure_url.c_str());
@@ -76,8 +75,9 @@ void loop() {
   
   Serial.print("Temperature: ");
   Serial.print(temp);
-  
-  Serial.print("Soil Moisture value: ");//percentage
+
+  //percentage
+  Serial.print("Soil Moisture value: ");
   Serial.println(soil_moist);
   
   Serial.print("Light: ");
