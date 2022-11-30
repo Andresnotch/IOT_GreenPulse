@@ -49,7 +49,8 @@ void loop() {
   
   // Join measures
   String measure_url = serverName + "?humidity=" + env_hum + "&soil_moist=" + soil_moist + "&light=" + light + "&temperature=" + temp;
-  
+
+  // Send HTTP request
   http.begin(measure_url.c_str());
   int httpResponseCode = http.GET();
 
